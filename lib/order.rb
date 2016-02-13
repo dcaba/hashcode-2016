@@ -11,6 +11,14 @@ class Order
 	def add_items(ptype,quantity)
 		@items[ptype].requested += quantity 
 	end
+	def item_picked(ptype,quantity) 
+		@items[ptype].ongoing += quantity
+	end
+	def item_delivered(ptype,quantity) 
+		@items[ptype].ongoing -= quantity
+		@items[ptype].delivered += quantity
+		@status = "closed" if pending_delivery_qty == 0
+	end
 	def requested_items()
 		@items.keys
 	end
@@ -31,6 +39,20 @@ class Order
 	def delivered_qty(ptype="all")
 		return @items.values.inject(0) {|sum,line| sum = sum + line.delivered} if ptype == "all"
 		return @items[ptype].delivered
+	end
+	def pending_delivery_items
+		return @items.select {|item,line| line.delivered != line.requested}.keys
+	end
+	def pending_delivery_qty(ptype="all")
+		return @items.values.inject(0) {|sum,line| sum = sum + line.requested - line.delivered} if ptype == "all"
+		return requested_qty(ptype) - delivered_qty(ptype)
+	end
+	def pending_pick_items
+		return @items.select {|item,line| line.delivered + line.ongoing != line.requested}.keys
+	end
+	def pending_pick_qty(ptype="all")
+		return @items.values.inject(0) {|sum,line| sum = sum + line.requested - line.delivered - line.ongoing} if ptype == "all"
+		return requested_qty(ptype) - delivered_qty(ptype) - ongoing_qty(ptype)
 	end
 
 end

@@ -8,7 +8,8 @@ unit testing II (drone) - 35 min
 read - 10 min
 classes implementation
   all but order - 1h
-  bug - 40m
+  order_bug - 40m
+  order - 30m
 scenario_loader / results creator
 engine class
 trivial engine
