@@ -15,7 +15,7 @@ describe Location do
 		location_c = Location.new(2,2)
 		expect(location_a.distance(location_c)).to be == 3
 		location_d = Location.new(0,9)
-		expect(location_a.distance(location_d)).to be == 3
+		expect(location_a.distance(location_d)).to be == 9
 	end
 
 end

@@ -4,3 +4,11 @@ TIMMINGS
 read - 10 min
 unit testing I (drone not included) - 35 min
 unit testing II (drone) - 35 min
+# commit unit testing complete
+read - 10 min
+classes implementation
+  all but order - 1h
+  bug - 40m
+scenario_loader / results creator
+engine class
+trivial engine

@@ -66,5 +66,18 @@ describe Drone do
 			expect(@drone.available_items(@ptype)).to be == 0
 		end
 	end
+	context "with multiple object types" do
+		before do
+			@ptype2 = ProductType.new(2,100)
+			@drone.load(@ptype2,5)
+		end
+		it "has the expected properties" do
+			expect(@drone.remaining_weight).to be == 500
+			expect(@drone.available_items(@ptype)).to be == 10
+			expect(@drone.available_items(@ptype2)).to be == 5
+		end
+
+
+	end
 
 end
