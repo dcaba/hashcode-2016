@@ -1,0 +1,74 @@
+#!/usr/bin/env ruby
+
+require_relative '../lib/product_type'
+require_relative '../lib/warehouse'
+require_relative '../lib/location'
+require_relative '../lib/order'
+
+def loader(file) 
+	File.open(file,mode="r") do |file|
+		# parameters   of   the   simulation
+		line=file.gets
+		elements = line.split
+		rows = elements[0]
+		cols = elements[1]
+		ndrones = elements[2]
+		turns = elements[3]
+		max_payload = elements[4]
+		puts "INFO: we got parms of the simulation"
+		puts "DEBUG: rows: #{rows}"
+		puts "DEBUG: cols: #{cols}"
+		puts "DEBUG: ndrones: #{ndrones}"
+		puts "DEBUG: turns: #{turns}"
+		puts "DEBUG: max_payload: #{max_payload}"	
+
+		# weights   of   the   products   available   for   orders 
+		nptypes = file.gets.chomp.to_i 
+		ptypes = Array.new
+		i=0
+		file.gets.split.each do |weight|
+			ptypes << ProductType.new(i,weight)	
+			i += 1
+		end
+		raise "list of ptypes weights not matching number of ptypes" if ptypes.size != nptypes
+		puts "INFO: we got #{ptypes.size} ptypes, and expecting #{nptypes}"
+		ptypes.each {|ptype| puts "DEBUG: #{ptype.inspect}"}
+
+		# warehouses   and   availability   of   individual   product   types
+		nwarehouses = file.gets.chomp.to_i 
+		warehouses = Array.new
+		i=0
+		nwarehouses.times do 
+			(row,col) = file.gets.split 
+			wlocation = Location.new(row.chomp.to_i,col.chomp.to_i)
+			warehouse = Warehouse.new(i,wlocation)	
+			p = 0
+			file.gets.split.each {|qty| warehouse.add_items(ptypes[p],qty.chomp.to_i);p+=1}
+			warehouses << warehouse	
+			i += 1
+		end
+		puts "INFO: we got #{warehouses.size} warehouses"
+		warehouses.each {|warehouse| puts "DEBUG: #{warehouse.inspect}"}
+		
+		# orders
+		norders = file.gets.chomp.to_i 
+		orders = Array.new
+		i=0
+		norders.times do 
+			(row,col) = file.gets.split 
+			olocation = Location.new(row.chomp.to_i,col.chomp.to_i)
+			order = Order.new(i,olocation)	
+			qty = file.gets.chomp.to_i
+			file.gets.split.each {|pid| order.add_items(ptypes[pid.to_i],1)}
+			raise "list of ordered items not matching qty" if order.requested_qty != qty
+			puts "INFO: for order #{order.id} we got #{order.requested_qty} items, and expecting #{qty}"
+			orders << order	
+			i += 1
+		end
+		puts "INFO: we got #{orders.size} orders"
+		orders.each {|order| puts "DEBUG: #{order.inspect}"}
+
+	end
+end
+
+loader ARGV[0]

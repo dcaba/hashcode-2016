@@ -30,7 +30,7 @@ describe Drone do
 	it "no more items that the ones that fit can be loaded" do
 		expect do
 			@drone.load(@ptype,11)
-		end.to raise_exception
+		end.to raise_exception(RuntimeError)
 	end
 	context "that is moving" do
 		before do
@@ -47,10 +47,10 @@ describe Drone do
 		it "cannot load or deliver" do
 			expect do
 				@drone.load(@ptype,1)
-			end.to raise_exception
+			end.to raise_exception(RuntimeError)
 			expect do
 				@drone.deliver(@ptype,1)
-			end.to raise_exception
+			end.to raise_exception(RuntimeError)
 		end
 
 		it "can load or deliver when arrives" do
