@@ -1,6 +1,7 @@
 class Drone
-	attr_accessor :location,:destination,:max_weight,:status,:remaining_turns
-	def initialize(initial_location,max_weight)
+	attr_accessor :id,:location,:destination,:max_weight,:status,:remaining_turns
+	def initialize(id,initial_location,max_weight)
+		@id = id
 		@location = initial_location
 		@max_weight = max_weight
 		@items = Hash.new(0)

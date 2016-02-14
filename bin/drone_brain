@@ -4,17 +4,42 @@ require_relative '../lib/product_type'
 require_relative '../lib/warehouse'
 require_relative '../lib/location'
 require_relative '../lib/order'
+require_relative '../lib/drone'
+
+def initialize_program
+	$init_time = Time.now
+	raise "Expecting input file as an argument" if ARGV.size == 0
+	welcome_message="Simulation starting at #{time}"
+	puts "INFO:"+"".center(80,"#")
+	puts "INFO:"+welcome_message.center(80,"#")
+	puts "INFO:"+"".center(80,"#")
+end
+
+
+def finish_program
+	bye_message="Simulation finished at #{time}...saving stats"
+	puts "INFO:"+"".center(80,"#")
+	puts "INFO:"+ bye_message.center(80,"#")
+	puts "INFO:"+"".center(80,"#")
+	#$games.each {|game| game.save_high_scores File.join(File.dirname(__FILE__),"#{game.title}.out")}
+	puts "INFO: EXECUTION TIME: #{((Time.now - $init_time)*1000).to_i} mili-seconds"
+end
+
+def time
+	Time.now.strftime "%H:%M:%S"
+end
+
 
 def loader(file) 
 	File.open(file,mode="r") do |file|
 		# parameters   of   the   simulation
 		line=file.gets
 		elements = line.split
-		rows = elements[0]
-		cols = elements[1]
-		ndrones = elements[2]
-		turns = elements[3]
-		max_payload = elements[4]
+		rows = elements[0].to_i
+		cols = elements[1].to_i
+		ndrones = elements[2].to_i
+		turns = elements[3].to_i
+		max_payload = elements[4].to_i
 		puts "INFO: we got parms of the simulation"
 		puts "DEBUG: rows: #{rows}"
 		puts "DEBUG: cols: #{cols}"
@@ -49,7 +74,7 @@ def loader(file)
 		end
 		puts "INFO: we got #{warehouses.size} warehouses"
 		warehouses.each {|warehouse| puts "DEBUG: #{warehouse.inspect}"}
-		
+
 		# orders
 		norders = file.gets.chomp.to_i 
 		orders = Array.new
@@ -68,7 +93,24 @@ def loader(file)
 		puts "INFO: we got #{orders.size} orders"
 		orders.each {|order| puts "DEBUG: #{order.inspect}"}
 
+		# drones
+		drones = Array.new
+		ndrones.times { |id| drones << Drone.new(id,warehouses[0].location,max_payload) }
+
+		return {turns:turns,ptypes:ptypes,warehouses:warehouses,orders:orders,drones:drones}
+
 	end
 end
 
-loader ARGV[0]
+def results_calculator(orders)
+	completed_orders = orders.select { |order| order.status == "closed" }
+	puts "INFO: Number of orders: #{orders.size}"
+	puts "INFO: Number of completed orders: #{completed_orders.size}"
+	puts "INFO: % completed orders: #{(completed_orders.size+0.0)/orders.size}"
+
+end
+
+initialize_program
+environment = loader ARGV[0]
+results_calculator environment[:orders]
+finish_program

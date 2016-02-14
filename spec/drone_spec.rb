@@ -7,7 +7,7 @@ describe Drone do
 		@ilocation = Location.new(0,0)
 		@ptype = ProductType.new(1,100)
 		@max_weight = 2000
-		@drone = Drone.new(@ilocation,@max_weight)
+		@drone = Drone.new(25,@ilocation,@max_weight)
 		@drone.load(@ptype,10)
 	end
 	it "has the expected initial properties" do
