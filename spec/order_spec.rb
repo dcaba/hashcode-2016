@@ -70,6 +70,8 @@ describe Order do
 	end
 
 	it "once some items are delivered, properties are accordingly updated" do
+		$max_turn = 160
+		$current_turn = 159
 		@order.item_picked(@ptype1,1)
 		@order.item_picked(@ptype2,1)
 		@order.item_delivered(@ptype2,1)
@@ -99,9 +101,12 @@ describe Order do
 		expect(@order.pending_pick_qty).to be == 2
 		expect(@order.pending_pick_qty(@ptype1)).to be == 2
 		expect(@order.pending_pick_qty(@ptype2)).to be == 0
+		expect(@order.score).to be == 0
 	end
 
 	it "once all items are delivered, properties are accordingly announced" do
+		$max_turn = 160
+		$current_turn = 15
 		@order.item_picked(@ptype1,2)
 		@order.item_picked(@ptype2,1)
 		@order.item_delivered(@ptype1,2)
@@ -134,5 +139,6 @@ describe Order do
 		expect(@order.pending_pick_qty).to be == 0
 		expect(@order.pending_pick_qty(@ptype1)).to be == 0
 		expect(@order.pending_pick_qty(@ptype2)).to be == 0
+		expect(@order.score).to be == 91
 	end
 end

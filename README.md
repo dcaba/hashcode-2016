@@ -1,4 +1,4 @@
-TIMMINGS
+TIMINGS
 ========
 
 read - 10 min

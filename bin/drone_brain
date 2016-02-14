@@ -5,9 +5,11 @@ require_relative '../lib/warehouse'
 require_relative '../lib/location'
 require_relative '../lib/order'
 require_relative '../lib/drone'
+require_relative '../lib/engine'
 
 def initialize_program
 	$init_time = Time.now
+	$current_turn = 0
 	raise "Expecting input file as an argument" if ARGV.size == 0
 	welcome_message="Simulation starting at #{time}"
 	puts "INFO:"+"".center(80,"#")
@@ -38,13 +40,13 @@ def loader(file)
 		rows = elements[0].to_i
 		cols = elements[1].to_i
 		ndrones = elements[2].to_i
-		turns = elements[3].to_i
+		$max_turns = elements[3].to_i
 		max_payload = elements[4].to_i
 		puts "INFO: we got parms of the simulation"
 		puts "DEBUG: rows: #{rows}"
 		puts "DEBUG: cols: #{cols}"
 		puts "DEBUG: ndrones: #{ndrones}"
-		puts "DEBUG: turns: #{turns}"
+		puts "DEBUG: max_turns: #{$max_turns}"
 		puts "DEBUG: max_payload: #{max_payload}"	
 
 		# weights   of   the   products   available   for   orders 
@@ -97,20 +99,25 @@ def loader(file)
 		drones = Array.new
 		ndrones.times { |id| drones << Drone.new(id,warehouses[0].location,max_payload) }
 
-		return {turns:turns,ptypes:ptypes,warehouses:warehouses,orders:orders,drones:drones}
+		return {ptypes:ptypes,warehouses:warehouses,orders:orders,drones:drones}
 
 	end
 end
 
 def results_calculator(orders)
 	completed_orders = orders.select { |order| order.status == "closed" }
+	score = completed_orders.inject(0) {|sum,order| sum + order.score}	
 	puts "INFO: Number of orders: #{orders.size}"
 	puts "INFO: Number of completed orders: #{completed_orders.size}"
 	puts "INFO: % completed orders: #{(completed_orders.size+0.0)/orders.size}"
+	puts "INFO: SCORE: #{score}"
 
 end
 
 initialize_program
 environment = loader ARGV[0]
+t_engine = TrivialEngine.new
+t_engine.load(environment)
+t_engine.run()
 results_calculator environment[:orders]
 finish_program
