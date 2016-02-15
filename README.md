@@ -11,6 +11,8 @@ classes implementation
   order_bug - 40m
   order - 30m
 scenario_loader - 30m + 30m
-results creator
-engine class
-trivial engine
+results creator - 15m
+engine class and dummy engine - 10m
+order perspective engine - 45m
+========================
+TOTAL = 5h 50m

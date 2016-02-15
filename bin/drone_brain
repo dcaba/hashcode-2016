@@ -98,26 +98,31 @@ def loader(file)
 		# drones
 		drones = Array.new
 		ndrones.times { |id| drones << Drone.new(id,warehouses[0].location,max_payload) }
+		puts "INFO: we got #{drones.size} drones"
+		drones.each {|drone| puts "DEBUG: #{drone.inspect}"}
 
 		return {ptypes:ptypes,warehouses:warehouses,orders:orders,drones:drones}
 
 	end
 end
 
-def results_calculator(orders)
+def results_calculator(name,orders)
 	completed_orders = orders.select { |order| order.status == "closed" }
 	score = completed_orders.inject(0) {|sum,order| sum + order.score}	
-	puts "INFO: Number of orders: #{orders.size}"
-	puts "INFO: Number of completed orders: #{completed_orders.size}"
-	puts "INFO: % completed orders: #{(completed_orders.size+0.0)/orders.size}"
-	puts "INFO: SCORE: #{score}"
+	puts "INFO: #{name}: Number of orders: #{orders.size}"
+	puts "INFO: #{name}:Number of completed orders: #{completed_orders.size}"
+	puts "INFO: #{name}:% completed orders: #{(completed_orders.size+0.0)/orders.size}"
+	puts "INFO: #{name}: SCORE: #{score}"
 
 end
 
 initialize_program
 environment = loader ARGV[0]
-t_engine = TrivialEngine.new
-t_engine.load(environment)
-t_engine.run()
-results_calculator environment[:orders]
+engines = [:DummyEngine,:OrderPerspectiveEngine]
+engines.each do |engine|
+	i_engine = Object.const_get(engine).new
+	i_engine.load(environment)
+	i_engine.run()
+	results_calculator(i_engine.class,environment[:orders])
+end
 finish_program

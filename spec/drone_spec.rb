@@ -9,6 +9,7 @@ describe Drone do
 		@max_weight = 2000
 		@drone = Drone.new(25,@ilocation,@max_weight)
 		@drone.load(@ptype,10)
+		@drone.tic # we realized loading a drone requires one cycle!
 	end
 	it "has the expected initial properties" do
 		expect(@drone.location).to be == @ilocation
@@ -16,6 +17,8 @@ describe Drone do
 		expect(@drone.remaining_weight).to be == @max_weight-1000
 		expect(@drone.available_items(@ptype)).to be == 10
 		expect(@drone.status).to be == "waiting"
+		expect(@drone.available_ptypes).to include @ptype
+		expect(@drone.available_ptypes.size).to be == 1
 	end
 	it "items can be delivered" do
 		@drone.deliver(@ptype,10)
@@ -41,7 +44,7 @@ describe Drone do
 			expect(@drone.location).to be == @ilocation
 			expect(@drone.destination).to be == @new_location
 			expect(@drone.remaining_turns).to be == 10
-			expect(@drone.status).to be == "moving"
+			expect(@drone.status).to be == "busy"
 		end
 
 		it "cannot load or deliver" do
@@ -61,8 +64,10 @@ describe Drone do
 			expect(@drone.remaining_turns).to be == 0
 			expect(@drone.status).to be == "waiting"
 			@drone.load(@ptype,10)
+			@drone.tic
 			expect(@drone.available_items(@ptype)).to be == 20
 			@drone.deliver(@ptype,20)
+			@drone.tic
 			expect(@drone.available_items(@ptype)).to be == 0
 		end
 	end
@@ -73,8 +78,12 @@ describe Drone do
 		end
 		it "has the expected properties" do
 			expect(@drone.remaining_weight).to be == 500
+			expect(@drone.available_items).to be == 15
 			expect(@drone.available_items(@ptype)).to be == 10
 			expect(@drone.available_items(@ptype2)).to be == 5
+			expect(@drone.available_ptypes).to include @ptype
+			expect(@drone.available_ptypes).to include @ptype2
+			expect(@drone.available_ptypes.size).to be == 2
 		end
 
 
