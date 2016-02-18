@@ -24,6 +24,7 @@ describe Drone do
 		@drone.deliver(@ptype,10)
 		expect(@drone.available_items(@ptype)).to be == 0
 		expect(@drone.remaining_weight).to be == @max_weight
+		expect(@drone.available_ptypes).not_to include @ptype
 	end
 	it "additional items can be loaded" do
 		@drone.load(@ptype,10)

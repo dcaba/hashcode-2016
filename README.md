@@ -13,6 +13,7 @@ classes implementation
 scenario_loader - 30m + 30m
 results creator - 15m
 engine class and dummy engine - 10m
-order perspective engine - 45m
+order perspective engine - 45+45m
+order perspective fixes - 1h
 ========================
-TOTAL = 5h 50m
+TOTAL = 7h 35m

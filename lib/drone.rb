@@ -1,5 +1,5 @@
 class Drone
-	attr_accessor :id,:location,:destination,:max_weight,:status,:remaining_turns
+	attr_reader :id,:location,:destination,:max_weight,:status,:remaining_turns
 	def initialize(id,initial_location,max_weight)
 		@id = id
 		@location = initial_location
@@ -28,7 +28,7 @@ class Drone
 		return @items.values.inject(:+)
 	end
 	def available_ptypes()
-		@items.keys
+		@items.select{|k,v| v > 0}.keys
 	end
 	def deliver(ptype, quantity)
 		if available_items(ptype) < quantity

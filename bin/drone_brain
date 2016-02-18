@@ -18,12 +18,13 @@ def initialize_program
 end
 
 
-def finish_program
+def finish_program(results)
 	bye_message="Simulation finished at #{time}...saving stats"
 	puts "INFO:"+"".center(80,"#")
 	puts "INFO:"+ bye_message.center(80,"#")
 	puts "INFO:"+"".center(80,"#")
-	#$games.each {|game| game.save_high_scores File.join(File.dirname(__FILE__),"#{game.title}.out")}
+	results.keys.each {|engine| puts "#{engine}:#{results[engine][0]}:#{results[engine][1]}:#{results[engine][2]}" }
+		    # File.join(File.dirname(__FILE__),"#{game.title}.out")
 	puts "INFO: EXECUTION TIME: #{((Time.now - $init_time)*1000).to_i} mili-seconds"
 end
 
@@ -40,13 +41,13 @@ def loader(file)
 		rows = elements[0].to_i
 		cols = elements[1].to_i
 		ndrones = elements[2].to_i
-		$max_turns = elements[3].to_i
+		$max_turn = elements[3].to_i
 		max_payload = elements[4].to_i
 		puts "INFO: we got parms of the simulation"
 		puts "DEBUG: rows: #{rows}"
 		puts "DEBUG: cols: #{cols}"
 		puts "DEBUG: ndrones: #{ndrones}"
-		puts "DEBUG: max_turns: #{$max_turns}"
+		puts "DEBUG: max_turn: #{$max_turn}"
 		puts "DEBUG: max_payload: #{max_payload}"	
 
 		# weights   of   the   products   available   for   orders 
@@ -54,7 +55,7 @@ def loader(file)
 		ptypes = Array.new
 		i=0
 		file.gets.split.each do |weight|
-			ptypes << ProductType.new(i,weight)	
+			ptypes << ProductType.new(i,weight.to_i)	
 			i += 1
 		end
 		raise "list of ptypes weights not matching number of ptypes" if ptypes.size != nptypes
@@ -108,21 +109,28 @@ end
 
 def results_calculator(name,orders)
 	completed_orders = orders.select { |order| order.status == "closed" }
+	completed_orders.each { |order| puts order.score}
 	score = completed_orders.inject(0) {|sum,order| sum + order.score}	
 	puts "INFO: #{name}: Number of orders: #{orders.size}"
-	puts "INFO: #{name}:Number of completed orders: #{completed_orders.size}"
-	puts "INFO: #{name}:% completed orders: #{(completed_orders.size+0.0)/orders.size}"
+	puts "INFO: #{name}: Number of completed orders: #{completed_orders.size}"
+	puts "INFO: #{name}: % completed orders: #{(completed_orders.size+0.0)/orders.size}"
 	puts "INFO: #{name}: SCORE: #{score}"
+	return score
 
 end
 
 initialize_program
 environment = loader ARGV[0]
 engines = [:DummyEngine,:OrderPerspectiveEngine]
+parms = ["",""]
+engine_num = 0
+results = Hash.new
 engines.each do |engine|
 	i_engine = Object.const_get(engine).new
 	i_engine.load(environment)
-	i_engine.run()
-	results_calculator(i_engine.class,environment[:orders])
+	parms[engine_num] ? i_engine.run : i_engine.run(parms[engine_num]) 
+	score = results_calculator(i_engine.class,environment[:orders])
+	results[engine] = [Object.const_get(engine).VERSION,parms[engine_num],score]
+	engine_num += 1
 end
-finish_program
+finish_program results
