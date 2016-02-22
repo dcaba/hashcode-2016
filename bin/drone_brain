@@ -122,13 +122,13 @@ end
 initialize_program
 environment = loader ARGV[0]
 engines = [:DummyEngine,:OrderPerspectiveEngine]
-parms = ["",""]
+parms = ["",{pre_sorting: ARGV[1].to_i}]
 engine_num = 0
 results = Hash.new
 engines.each do |engine|
 	i_engine = Object.const_get(engine).new
 	i_engine.load(environment)
-	parms[engine_num] ? i_engine.run : i_engine.run(parms[engine_num]) 
+	parms[engine_num] == "" ? i_engine.run : i_engine.run(parms[engine_num]) 
 	score = results_calculator(i_engine.class,environment[:orders])
 	results[engine] = [Object.const_get(engine).VERSION,parms[engine_num],score]
 	engine_num += 1

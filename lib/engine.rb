@@ -10,7 +10,7 @@ end
 class DummyEngine < Engine
 	@VERSION = 0.0
 	class << self; attr_reader :VERSION; end;
-	def run
+	def run()
 	end
 end
 
@@ -44,8 +44,9 @@ class OrderPerspectiveEngine < Engine
 			warehouse_a.location.distance(location) <=> warehouse_b.location.distance(location)
 		end
 	end
-	def run
-		@orders.sort! {|a,b| a.pending_delivery_qty <=> b.pending_delivery_qty}
+	def run(params)
+		puts "DEBUG: Param presorting is #{params[:pre_sorting]}"
+		@orders.sort! {|a,b| a.pending_delivery_qty <=> b.pending_delivery_qty} if params[:pre_sorting] == 1
 		while $current_turn < $max_turn 
 			# optimization: distribute drones
 			# optimization: balancing drones selection
