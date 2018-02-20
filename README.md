@@ -1,10 +1,11 @@
-TIMINGS
-========
+# TIMINGS
 
 read - 10 min
 unit testing I (drone not included) - 35 min
 unit testing II (drone) - 35 min
-# commit unit testing complete
+
+## commit unit testing complete
+
 read - 10 min
 classes implementation
   all but order - 1h
@@ -15,5 +16,5 @@ results creator - 15m
 engine class and dummy engine - 10m
 order perspective engine - 45+45m
 order perspective fixes - 1h
-========================
-TOTAL = 7h 35m
+
+*TOTAL = 7h 35m*
